@@ -6,6 +6,8 @@ import {
   trimUndefinedProperties,
 } from "./helpers";
 
+type RequestHeaders = Record<string, string>;
+
 interface FetchiosParams<RequestBody = unknown> {
   url: string;
   params?: Record<string, QueryParamValue>;
@@ -15,7 +17,7 @@ interface FetchiosParams<RequestBody = unknown> {
   signal?: AbortSignal;
   timeout?: number;
   withCredentials?: boolean;
-  headers?: Record<string, string>;
+  headers?: RequestHeaders;
   responseType?: "blob" | "json" | "text" | "arraybuffer";
 }
 
@@ -25,7 +27,7 @@ interface FetchiosDefaultParams
 interface FetchiosAliasParams
   extends Omit<FetchiosParams, "url" | "data" | "method"> {}
 
-type FetchiosRequestInterceptor = <T = unknown>(
+export type FetchiosRequestInterceptor = <T = unknown>(
   params: FetchiosParams<T>,
 ) => FetchiosParams<T>;
 
@@ -73,9 +75,11 @@ const getResponseData = async (
 };
 
 const addQueryParams: FetchiosRequestInterceptor = (params) => {
-  if (!params.params) return params;
+  if (!params.params || !Object.keys(params).length) return params;
 
   const queryString = stringify(params.params);
+  if (!queryString) return params;
+
   return {
     ...params,
     url: `${params.url}${params.url.includes("?") ? "&" : "?"}${queryString}`,
@@ -273,11 +277,30 @@ export class Fetchios {
     });
 }
 
+/**
+ * @deprecated use FetchiosParams instead
+ */
 export interface InternalAxiosRequestConfig extends FetchiosParams {}
-export type AxiosRequestHeaders = Required<FetchiosParams["headers"]>;
+
+/**
+ * @deprecated use RequestHeaders instead
+ */
+export type AxiosRequestHeaders = RequestHeaders;
+
+/**
+ * @deprecated use FetchiosResponse instead
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AxiosResponse<Data = any> = FetchiosResponse<Data>;
+
+/**
+ * @deprecated use FetchiosDefaultParams instead
+ */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 export type CreateAxiosDefaults<DataType = any> = FetchiosDefaultParams;
+
+/**
+ * @deprecated use named export Fetchios instead
+ */
 // eslint-disable-next-line import/no-default-export, @typescript-eslint/naming-convention
 export default class axios extends Fetchios {}
