@@ -79,7 +79,7 @@ module.exports = {
       },
       {
         selector: "variable",
-        format: ["camelCase"],
+        format: ["camelCase", "upperCase"],
         leadingUnderscore: "allow",
         modifiers: ["const"],
       },

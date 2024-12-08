@@ -19,7 +19,8 @@ const assertUnreachable = (x: never) => {
   throw new Error(`Didn't expect to get here. You must manage value "${x}"`);
 };
 
-type UnknownType = unknown;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type UnknownType = any; // For axios migration...
 
 type RequestHeaders = Record<string, string>;
 
@@ -403,3 +404,44 @@ export class Fetchios {
 export const isFetchiosError = <D = UnknownType>(
   payload: unknown,
 ): payload is FetchiosError<D> => payload instanceof FetchiosError;
+
+/**
+ * @deprecated use FetchiosParams instead
+ */
+export type InternalAxiosRequestConfig = FetchiosParams;
+
+/**
+ * @deprecated use RequestHeaders instead
+ */
+export type AxiosRequestHeaders = RequestHeaders;
+
+/**
+ * @deprecated use FetchiosParams instead
+ */
+export type AxiosRequestConfig = Partial<FetchiosParams>;
+
+/**
+ * @deprecated use FetchiosResponse instead
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AxiosResponse<Data = any> = FetchiosResponse<Data>;
+
+/**
+ * @deprecated use FetchiosDefaultParams instead
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+export type CreateAxiosDefaults<DataType = any> = FetchiosDefaultParams;
+
+/**
+ * @deprecated use isFetchiosError instead
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const isAxiosError = <T = any, D = any>(
+  payload: unknown,
+): payload is AxiosError<T, D> => payload instanceof AxiosError;
+
+/**
+ * @deprecated use named export Fetchios instead
+ */
+// eslint-disable-next-line import/no-default-export, @typescript-eslint/naming-convention
+export default class axios extends Fetchios {}

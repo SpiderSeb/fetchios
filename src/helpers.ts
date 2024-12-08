@@ -34,30 +34,3 @@ export const trimUndefinedProperties = (obj: unknown): unknown => {
   }
   return obj;
 };
-
-export const computeSignal = (
-  signal?: AbortSignal,
-  timeout?: number,
-): AbortSignal | undefined => {
-  if (typeof AbortController === "undefined") return undefined;
-
-  if (!timeout) return signal;
-
-  const timeoutController = new AbortController();
-  const timer = setTimeout(() => {
-    timeoutController.abort(new Error(`timeout of ${timeout}ms exceeded`)); // TODO throw Timeout error
-  }, timeout);
-
-  if (signal) {
-    if (signal.aborted === true) {
-      timeoutController.abort(signal.reason);
-      clearTimeout(timer);
-    }
-    signal.addEventListener("abort", () => {
-      timeoutController.abort(signal.reason);
-      clearTimeout(timer);
-    });
-  }
-
-  return timeoutController.signal;
-};
